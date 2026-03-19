@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { toast } from 'vue-sonner'
 import type { User } from '@/types'
+import { API_BASE_URL } from '@/api/config'
 import { extractUserFromAccessToken, fetchAuthenticatedUser } from '@/lib/auth'
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
@@ -31,7 +32,7 @@ function extractRefreshPayload(
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 })
 
@@ -72,7 +73,7 @@ api.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true },
         )

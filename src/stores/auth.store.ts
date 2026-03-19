@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
+import { API_BASE_URL } from '@/api/config'
 import type { User } from '@/types/auth'
 import { extractUserFromAccessToken, fetchAuthenticatedUser } from '@/lib/auth'
 
@@ -58,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (accessToken.value) {
       try {
         await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
+          `${API_BASE_URL}/auth/logout`,
           {},
           {
             headers: {
@@ -111,7 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Use raw axios (not the interceptor `api` instance) to avoid triggering
       // the response interceptor's own refresh logic and causing an infinite loop.
       const res = await axios.post<{ data: { accessToken: string } }>(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
+        `${API_BASE_URL}/auth/refresh`,
         {},
         { withCredentials: true },
       )

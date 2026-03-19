@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { API_BASE_URL } from '@/api/config'
 import type { User } from '@/types'
 import type { ApiResponse } from '@/types'
 
@@ -44,7 +45,7 @@ export function extractUserFromAccessToken(token: string): User | null {
 
 export async function fetchAuthenticatedUser(accessToken: string): Promise<User | null> {
   try {
-    const res = await axios.get<ApiResponse<User>>(`${import.meta.env.VITE_API_BASE_URL}/auth/me`, {
+    const res = await axios.get<ApiResponse<User>>(`${API_BASE_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
