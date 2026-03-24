@@ -91,6 +91,13 @@
                 <ArrowRight class="size-4" />
               </span>
             </Button>
+
+            <div class="text-center text-sm text-zinc-600">
+              Don't have an account?
+              <RouterLink to="/register" class="font-semibold text-zinc-950 hover:underline">
+                Sign up
+              </RouterLink>
+            </div>
           </form>
         </div>
       </div>
