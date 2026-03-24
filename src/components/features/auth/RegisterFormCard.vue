@@ -106,23 +106,19 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowRight } from 'lucide-vue-next'
-import api from '@/api/axios'
-import type { RegisterRequestData, RegisterResponse } from '@/types/auth'
+import { useRegister } from '@/composables/useRegister'
+import type { RegisterRequestData } from '@/types/auth'
 import AuthShowcasePanel from '@/components/features/auth/AuthShowcasePanel.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-const REGISTER_ENDPOINT = 'https://api.winandahartadi.cloud/api/auth/register'
-
 const router = useRouter()
+const { isLoading, submitRegister } = useRegister()
 const username = ref('')
 const email = ref('')
 const password = ref('')
-const isLoading = ref(false)
 
 async function handleRegister(): Promise<void> {
-  isLoading.value = true
-
   const payload: RegisterRequestData = {
     username: username.value,
     email: email.value,
@@ -130,12 +126,10 @@ async function handleRegister(): Promise<void> {
   }
 
   try {
-    await api.post<RegisterResponse>(REGISTER_ENDPOINT, payload)
+    await submitRegister(payload)
     await router.push('/login')
   } catch {
     // Errors are handled globally by the Axios response interceptor (toast)
-  } finally {
-    isLoading.value = false
   }
 }
 </script>
