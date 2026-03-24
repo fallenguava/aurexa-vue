@@ -20,63 +20,60 @@
               class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-amber-700"
             >
               <span class="h-2 w-2 rounded-full bg-amber-500" />
-              Welcome Back
+              New Account
             </div>
 
             <div class="space-y-2">
               <h2 class="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-                Sign in to Aurexa
+                Create your Aurexa account
               </h2>
               <p class="max-w-md text-sm leading-6 text-zinc-500 sm:text-base">
-                Review pockets, track every transaction, and stay on top of your money with a calmer
-                workspace.
+                Register to start managing your pockets and transactions in one place.
               </p>
             </div>
           </div>
 
-          <form @submit.prevent="handleLogin" novalidate class="space-y-5">
+          <form @submit.prevent="handleRegister" novalidate class="space-y-5">
             <div class="space-y-2">
               <label for="username" class="text-sm font-medium text-zinc-700">Username</label>
-              <div class="relative">
-                <UserRound
-                  class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-zinc-400"
-                />
-                <Input
-                  id="username"
-                  v-model="username"
-                  type="text"
-                  autocomplete="username"
-                  required
-                  placeholder="Enter your username"
-                  class="h-12 rounded-xl border-zinc-200 bg-zinc-50 pl-11 shadow-none focus-visible:bg-white"
-                  :disabled="isLoading"
-                />
-              </div>
+              <Input
+                id="username"
+                v-model="username"
+                type="text"
+                autocomplete="username"
+                required
+                placeholder="Enter your username"
+                class="h-12 rounded-xl border-zinc-200 bg-zinc-50 shadow-none focus-visible:bg-white"
+                :disabled="isLoading"
+              />
             </div>
 
             <div class="space-y-2">
-              <div class="flex items-center justify-between gap-3">
-                <label for="password" class="text-sm font-medium text-zinc-700">Password</label>
-                <span class="text-xs font-medium uppercase tracking-[0.14em] text-zinc-400">
-                  Protected access
-                </span>
-              </div>
+              <label for="email" class="text-sm font-medium text-zinc-700">Email</label>
+              <Input
+                id="email"
+                v-model="email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="name@example.com"
+                class="h-12 rounded-xl border-zinc-200 bg-zinc-50 shadow-none focus-visible:bg-white"
+                :disabled="isLoading"
+              />
+            </div>
 
-              <div class="relative">
-                <KeyRound
-                  class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-zinc-400"
-                />
-                <Input
-                  id="password"
-                  v-model="password"
-                  type="password"
-                  autocomplete="current-password"
-                  required
-                  placeholder="••••••••"
-                  class="h-12 rounded-xl border-zinc-200 bg-zinc-50 pl-11 shadow-none focus-visible:bg-white"
-                  :disabled="isLoading"
-                />
-              </div>
+            <div class="space-y-2">
+              <label for="password" class="text-sm font-medium text-zinc-700">Password</label>
+              <Input
+                id="password"
+                v-model="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                placeholder="••••••••"
+                class="h-12 rounded-xl border-zinc-200 bg-zinc-50 shadow-none focus-visible:bg-white"
+                :disabled="isLoading"
+              />
             </div>
 
             <Button
@@ -85,17 +82,17 @@
               :disabled="isLoading"
               class="h-12 w-full rounded-xl bg-zinc-950 text-base font-semibold text-white hover:bg-zinc-800"
             >
-              <span v-if="isLoading">Signing in...</span>
+              <span v-if="isLoading">Signing up...</span>
               <span v-else class="inline-flex items-center gap-2">
-                Enter Workspace
+                Create Account
                 <ArrowRight class="size-4" />
               </span>
             </Button>
 
             <div class="text-center text-sm text-zinc-600">
-              Don't have an account?
-              <RouterLink to="/register" class="font-semibold text-zinc-950 hover:underline">
-                Sign up
+              Already have an account?
+              <RouterLink to="/login" class="font-semibold text-zinc-950 hover:underline">
+                Sign in
               </RouterLink>
             </div>
           </form>
@@ -108,34 +105,33 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.store'
+import { ArrowRight } from 'lucide-vue-next'
 import api from '@/api/axios'
-import type { LoginResponse } from '@/types/auth'
+import type { RegisterRequestData, RegisterResponse } from '@/types/auth'
 import AuthShowcasePanel from '@/components/features/auth/AuthShowcasePanel.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ArrowRight, KeyRound, ShieldCheck, UserRound } from 'lucide-vue-next'
+
+const REGISTER_ENDPOINT = 'https://api.winandahartadi.cloud/api/auth/register'
 
 const router = useRouter()
-const authStore = useAuthStore()
-
 const username = ref('')
-const password = ref<string>('')
-const isLoading = ref<boolean>(false)
+const email = ref('')
+const password = ref('')
+const isLoading = ref(false)
 
-async function handleLogin(): Promise<void> {
+async function handleRegister(): Promise<void> {
   isLoading.value = true
 
+  const payload: RegisterRequestData = {
+    username: username.value,
+    email: email.value,
+    password: password.value,
+  }
+
   try {
-    const response = await api.post<LoginResponse>('/auth/login', {
-      username: username.value,
-      password: password.value,
-    })
-
-    const { user, accessToken } = response.data.data
-
-    authStore.setAuth(user, accessToken)
-    await router.push('/')
+    await api.post<RegisterResponse>(REGISTER_ENDPOINT, payload)
+    await router.push('/login')
   } catch {
     // Errors are handled globally by the Axios response interceptor (toast)
   } finally {

@@ -20,4 +20,11 @@ export interface AuthResponseData {
   accessToken: string
 }
 
+export interface RegisterRequestData {
+  username: string
+  email: string
+  password: string
+}
+
 export type LoginResponse = ApiResponse<AuthResponseData>
+export type RegisterResponse = ApiResponse<AuthResponseData>
